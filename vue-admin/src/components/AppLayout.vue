@@ -1,5 +1,6 @@
 <script setup>
   import { ref, onMounted, onUnmounted } from 'vue';
+  import store from "../store";
   import Sidebar from './Sidebar.vue';
   import Navbar from './Navbar.vue';
 
@@ -18,6 +19,7 @@
   }
 
   onMounted(() => {
+    store.dispatch('getUser');
     updateSidebarState();
     window.addEventListener('resize', updateSidebarState)
   })
