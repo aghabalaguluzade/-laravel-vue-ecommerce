@@ -1,11 +1,14 @@
 <script setup>
 import { computed, onMounted, ref} from "vue";
-import store from "../store.js";
+import store from "../store";
 import Spinner from "../components/core/Spinner.vue";
+import TableHeaderCell from "../components/core/Table/TableHeaderCell.vue";
 import { PRODUCTS_PER_PAGE } from "../constants";
 
 const perPage = ref(PRODUCTS_PER_PAGE);
 const search = ref('');
+const sortField = ref('updated_at');
+const sortDirection = ref('desc');
 const products = computed(() => store.state.products);
 
 onMounted(() => {
@@ -24,8 +27,24 @@ function getProducts(url = null) {
   store.dispatch("getProducts", {
     url,
     search : search.value,
-    perPage : perPage.value
+    perPage : perPage.value,
+    sort_field : sortField.value,
+    sort_direction : sortDirection.value
   });
+}
+
+function sortProducts(field) {
+  if(field === sortField.value) {
+    if(sortDirection.value === 'desc') {
+      sortDirection.value = 'asc';
+    }else {
+      sortDirection.value = 'desc';
+    }
+  }else {
+    sortField.value = field;
+    sortDirection.value = 'asc';
+  }
+  getProducts();
 }
 </script>
 
@@ -59,40 +78,57 @@ function getProducts(url = null) {
                placeholder="Type to Search products">
       </div>
     </div>
-    <Spinner v-if="products.loading"/>
-    <template v-else>
+    <table class="table-auto w-full">
+      <thead>
+      <tr>
+        <TableHeaderCell field="id" :sort-field="sortField" :sort-direction="sortDirection" @click="sortProducts('id')">
+          ID
+        </TableHeaderCell>
+        <TableHeaderCell field="image" :sort-field="sortField" :sort-direction="sortDirection">
+          Image
+        </TableHeaderCell>
+        <TableHeaderCell field="title" :sort-field="sortField" :sort-direction="sortDirection"
+                         @click="sortProducts('title')">
+          Title
+        </TableHeaderCell>
+        <TableHeaderCell field="price" :sort-field="sortField" :sort-direction="sortDirection"
+                         @click="sortProducts('price')">
+          Price
+        </TableHeaderCell>
+        <TableHeaderCell field="updated_at" :sort-field="sortField" :sort-direction="sortDirection"
+                         @click="sortProducts('updated_at')">
+          Last Updated At
+        </TableHeaderCell>
+      </tr>
+      </thead>
+      <tbody v-if="products.loading">
+      <tr>
+        <td colspan="5">
+          <Spinner/>
+        </td>
+      </tr>
+      </tbody>
+      <tbody v-else>
+      <tr v-for="product of products.data">
+        <td class="border-b p-2 ">{{ product.id }}</td>
+        <td class="border-b p-2 ">
+          <img class="w-16 h-16 object-cover" :src="product.image" :alt="product.title">
+        </td>
+        <td class="border-b p-2 max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{{
+            product.title
+          }}
+        </td>
+        <td class="border-b p-2">
+          {{ product.price }}
+        </td>
+        <td class="border-b p-2 ">
+          {{ product.updated_at }}
+        </td>
+      </tr>
+      </tbody>
+    </table>
 
-      <table class="table-auto w-full">
-        <thead>
-        <tr>
-          <th class="border-b-2 p-2 text-left">ID</th>
-          <th class="border-b-2 p-2 text-left">Image</th>
-          <th class="border-b-2 p-2 text-left">Title</th>
-          <th class="border-b-2 p-2 text-left">Price</th>
-          <th class="border-b-2 p-2 text-left">Last Updated At</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="product of products.data">
-          <td class="border-b p-2 ">{{ product.id }}</td>
-          <td class="border-b p-2 ">
-            <img class="w-16" :src="product.image" :alt="product.title">
-          </td>
-          <td class="border-b p-2 max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{{
-              product.title
-            }}
-          </td>
-          <td class="border-b p-2">
-            {{ product.price }}
-          </td>
-          <td class="border-b p-2 ">
-            {{ product.updated_at }}
-          </td>
-        </tr>
-        </tbody>
-      </table>
-
-      <div class="flex justify-between items-center mt-5">
+      <div v-if="!products.loading" class="flex justify-between items-center mt-5">
         <span>
           Showing from {{ products.from }} to {{ products.to }}
         </span>
@@ -123,6 +159,5 @@ function getProducts(url = null) {
           </a>
         </nav>
       </div>
-    </template>
   </div>
 </template>

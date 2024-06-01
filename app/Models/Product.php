@@ -14,10 +14,10 @@ class Product extends Model
 
     protected $fillable = ['title', 'description', 'price'];
 
-    public function getSlugOptions(): SlugOptions
+    public function getSlugOptions() : SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugFrom('title')
+            ->generateSlugsFrom('title')
             ->saveSlugsTo('slug');
     }
 }

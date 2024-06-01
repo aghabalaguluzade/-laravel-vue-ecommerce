@@ -24,7 +24,7 @@ class ProductController extends Controller
         $product = Product::query()
             ->where('title', 'like', "%{$search}%")
             ->orderBy($sortField, $sortDirection)
-            ->pagination($perPage);
+            ->paginate($perPage);
 
         return ProductListResource::collection($product);
     }
