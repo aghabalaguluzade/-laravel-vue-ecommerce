@@ -23,6 +23,8 @@ class Product extends Model
 
     public function getRouteKeyName()
     {
-        return 'slug';
+        return request()->route()->getPrefix() === 'api'
+            ? 'id'
+            : 'slug';
     }
 }
