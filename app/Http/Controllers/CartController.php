@@ -26,29 +26,29 @@ class CartController extends Controller
         return view('cart.index', compact('cartItems', 'products', 'total'));
     }
 
-    public function getTotalCount()
-    {
-        return response(['count' => Cart::getCartItemsCount()]);
-    }
-
     public function add(Request $request, Product $product)
     {
         $user = $request->user();
         $quantity = $request->post('quantity', 1);
 
         if($user) {
-            $data = [
+            $cartItem = CartItem::where(['user_id' = $user->id, 'product_id' => $product->id])->first();
+
+            if($cartItem) {
+                $cartItem->quantity += $quantity;
+                $cartItem->update();
+            }else {
+                $data = [
                 'user_id' => $request->user()->id,
                 'product_id' => $product->id,
-                'quantity' => $quantity,
-                'price' => $product->price
+                'quantity' => $quantity
             ];
 
             CartItem::create($data);
+            }
 
             return response([
-                'count' => Cart::getCartItemsCount(),
-                'total' => CartItem::where(['user_id' => $request->user()->id])->sum('price * quantity')
+                'count' => Cart::getCartItemsCount()
             ]);
         }else {
             $cartItems = json_decode($request->cookie('cart_items', '[]'), true);
@@ -82,14 +82,13 @@ class CartController extends Controller
         $user = request()->user();
 
         if($user) {
-            $cartItem = CartItem::query()->where(['user_id', $user->id, 'product_id' => $product->id])->first();
+            $cartItem = CartItem::query()->where(['user_id' => $user->id, 'product_id' => $product->id])->first();
             if($cartItem) {
                 $cartItem->delete();
             }
 
             return response([
-                'count' => Cart::getCartItemsCount(),
-                'total' => CartItem::where(['user_id' => $request->user->id()])->sum('price * quantity')
+                'count' => Cart::getCartItemsCount()
             ]);
         }else {
             $cartItems = json_decode($request->cookie('cart_items', '[]'), true);
@@ -102,7 +101,7 @@ class CartController extends Controller
 
             Cookie::queue('cart_items', json_encode($cartItems), 60 * 24 * 30);
 
-            return response(Cart::getCountAndTotalFromItems($cartItems));
+            return response(['count' => Cart::getCountFromItems($cartItems)]);
         }
     }
 
@@ -115,8 +114,7 @@ class CartController extends Controller
             CartItem::where(['user_id' => $request->user()->id, 'product_id' => $product->id])->update(['quantity' => $quantity]);
 
             return response([
-                'count' => Cart::getCartItemsCount(),
-                'total' => CartItem::where(['user_id' => $request->user()->id])->sum('price * quantity')
+                'count' => Cart::getCartItemsCount()
             ]);
         }else {
             $cartItems = json_decode($request->cookie('cart_items', '[]'), true);
@@ -129,7 +127,7 @@ class CartController extends Controller
 
             Cookie::queue('cart_items', json_encode($cartItems), 60 * 24 * 30);
 
-            return response(Cart::getCountAndTotalFromItems($cartItems));
+            return response(['count' => Cart::getCountFromItems($cartItems)]);
         }
     }
 }
