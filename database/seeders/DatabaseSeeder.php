@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Database\Seeders\AdminUserSeeder;
+use Database\Seeders\CountrySeeder;
 use Database\Seeders\ProductSeeder;
 use Illuminate\Database\Seeder;
 

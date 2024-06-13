@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Customer extends Model
 {
     use HasFactory;
+
+    protected $primaryKey = 'user_id';
     protected $fillable = ['first_name', 'last_name', 'phone', 'status'];
 
     public function user()

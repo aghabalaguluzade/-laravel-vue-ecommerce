@@ -24,8 +24,8 @@ class CountrySeeder extends Seeder
         ];
 
         $countries = [
-            ['code' => 'AZ', 'name' => 'Azerbaijan', 'states' => null],
-            ['code' => 'TR', 'name' => 'Türkiye', 'states' => null],
+            ['code' => 'az', 'name' => 'Azerbaijan', 'states' => null],
+            ['code' => 'tr', 'name' => 'Turkiye', 'states' => null],
             ['code' => 'geo', 'name' => 'Georgia', 'states' => null],
             ['code' => 'ing', 'name' => 'India', 'states' => null],
             ['code' => 'usa', 'name' => 'United States of America', 'states' => json_encode($usaStates)],
