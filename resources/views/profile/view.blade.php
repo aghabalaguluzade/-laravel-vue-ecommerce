@@ -1,14 +1,14 @@
 <x-app-layout>
-    <div class="container mx-auto lg:w-2/3 p-5">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-            <div x-data="{
-                flashMessage: '{{ session('flash_message') }}',
-                init() {
-                    if (this.flashMessage) {
-                        setTimeout(() => this.$dispatch('notify', { message: this.flashMessage }), 200)
-                    }
+        <div x-data="{
+            flashMessage: '{{ session('flash_message') }}',
+            init() {
+                if (this.flashMessage) {
+                    setTimeout(() => this.$dispatch('notify', {message: this.flashMessage}), 200)
                 }
-            }" class="bg-white p-3 shadow rounded-lg md:col-span-2">
+            }
+        }" class="container mx-auto lg:w-2/3 p-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <div class="bg-white p-3 shadow rounded-lg md:col-span-2">
                 <form x-data="{
                     billingAddress: {{ json_encode([
                         'address1' => old('billing.address1', $billingAddress->address1),
@@ -26,6 +26,7 @@
                         'country_code' => old('shipping.country_code', $shippingAddress->country_code),
                         'zipcode' => old('shipping.zipcode', $shippingAddress->zipcode),
                     ]) }},
+                    countries: {{ json_encode($countries) }},
                 }" action="{{ route('profile.update') }}" method="post">
                     @csrf
                     <h2 class="text-xl font-semibold mb-2">Profile Details</h2>
@@ -98,30 +99,32 @@
                         <div>
                             <x-input
                                 type="text"
-                                name="billing[state]"
-                                x-model="billingAddress.state"
-                                placeholder="State"
+                                name="billing[zipcode]"
+                                x-model="billingAddress.zipcode"
+                                placeholder="ZipCode"
                                 class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
                             />
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-3 mb-3">
                         <div>
-                            <select name="billing[country_code]"
-                                    class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded">
+                            <x-input type="select"
+                                     name="billing[country_code]"
+                                     x-model="billingAddress.country_code"
+                                     class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded">
                                 <option value="">Select Country</option>
-                                @foreach($countries as $country)
-                                    <option
-                                        {{ $country->code === $billingAddress->country_code ? 'selected' : '' }} value="{{ $country->code }}">{{ $country->name }}</option>
-                                @endforeach
-                            </select>
+                                <template x-for="country of countries" :key="country.code">
+                                    <option :selected="country.code === billingAddress.country_code"
+                                            :value="country.code" x-text="country.name"></option>
+                                </template>
+                            </x-input>
                         </div>
                         <div>
                             <x-input
                                 type="text"
-                                name="billing[zipcode]"
-                                value="{{ $billingAddress->zipcode }}"
-                                placeholder="ZipCode"
+                                name="billing[state]"
+                                x-model="billingAddress.state"
+                                placeholder="State"
                                 class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
                             />
                         </div>
@@ -168,31 +171,32 @@
                         <div>
                             <x-input
                                 type="text"
-                                name="shipping[state]"
-                                x-model="shippingAddress.state"
-                                placeholder="State"
+                                name="shipping[zipcode]"
+                                x-model="shippingAddress.zipcode"
+                                placeholder="ZipCode"
                                 class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
                             />
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-3 mb-3">
                         <div>
-                            <select name="shipping[country_code]"
-                                    value="{{ $shippingAddress->country_code }}"
-                                    class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded">
+                            <x-input type="select"
+                                     name="shipping[country_code]"
+                                     x-model="shippingAddress.country_code"
+                                     class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded">
                                 <option value="">Select Country</option>
-                                @foreach($countries as $country)
-                                    <option
-                                        {{ $country->code === $shippingAddress->country_code ? 'selected' : '' }}  value="{{ $country->code }}">{{ $country->name }}</option>
-                                @endforeach
-                            </select>
+                                <template x-for="country of countries" :key="country.code">
+                                    <option :selected="country.code === shippingAddress.country_code"
+                                            :value="country.code" x-text="country.name"></option>
+                                </template>
+                            </x-input>
                         </div>
                         <div>
                             <x-input
-                                name="shipping[zipcode]"
-                                x-model="shippingAddress.zipcode"
+                                name="shipping[state]"
+                                x-model="shippingAddress.state"
                                 type="text"
-                                placeholder="ZipCode"
+                                placeholder="State"
                                 class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
                             />
                         </div>
@@ -202,36 +206,39 @@
                 </form>
             </div>
             <div class="bg-white p-3 shadow rounded-lg">
-                <h2 class="text-xl font-semibold mb-2">Update Password</h2>
-                <div class="mb-3">
-                    <x-text-input
-                        type="password"
-                        name="old_password"
-                        placeholder="Your Current Password"
-                        class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
-                    />
-                </div>
-                <div class="mb-3">
-                    <x-text-input
-                        type="password"
-                        name="new_password"
-                        placeholder="New Password"
-                        class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
-                    />
-                </div>
-                <div class="mb-3">
-                    <x-text-input
-                        type="password"
-                        name="new_password_repeat"
-                        placeholder="Repeat New Password"
-                        class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
-                    />
-                </div>
-                <button
-                    class="btn-primary bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 w-full"
-                >
-                    Update
-                </button>
+                 <form action="{{route('profile_password.update')}}" method="post">
+                    @csrf
+                    <h2 class="text-xl font-semibold mb-2">Update Password</h2>
+                    <div class="mb-3">
+                        <x-input
+                            type="password"
+                            name="old_password"
+                            placeholder="Your Current Password"
+                            class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <x-input
+                            type="password"
+                            name="new_password"
+                            placeholder="New Password"
+                            class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <x-input
+                            type="password"
+                            name="new_password_confirmation"
+                            placeholder="Repeat New Password"
+                            class="w-full focus:border-purple-600 focus:ring-purple-600 border-gray-300 rounded"
+                        />
+                    </div>
+                    <button
+                        class="btn-primary bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 w-full"
+                    >
+                        Update
+                    </button>
+                </form>
             </div>
         </div>
     </div>
