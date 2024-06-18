@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
 
     // Checkout
     Route::post('/checkout', [CheckoutController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/checkout/{order}', [CheckoutController::class, 'checkoutOrder'])->name('cart.checkout-order');
     Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::get('/checkout/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');
 
@@ -36,5 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/orders', [OrderController::class, 'index'])->name('order.index');
     Route::get('/orders/view/:order', [OrderController::class, 'view'])->name('order.view');
 });
+
+Route::post('/webhook/stripe', [CheckoutController::class, 'webhook']);
 
 require __DIR__.'/auth.php';
