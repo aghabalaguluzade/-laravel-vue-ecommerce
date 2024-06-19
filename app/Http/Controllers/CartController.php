@@ -29,7 +29,7 @@ class CartController extends Controller
         $quantity = $request->post('quantity', 1);
 
         if($user) {
-            $cartItem = CartItem::where(['user_id' = $user->id, 'product_id' => $product->id])->first();
+            $cartItem = CartItem::where(['user_id' => $user->id, 'product_id' => $product->id])->first();
 
             if($cartItem) {
                 $cartItem->quantity += $quantity;
