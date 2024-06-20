@@ -4,6 +4,7 @@
   import Sidebar from "./Sidebar.vue";
   import Navbar from "./Navbar.vue";
   import Spinner from "./core/Spinner.vue";
+  import Toast from "./core/Toast.vue";
 
   const currentUser = computed(() => store.state.user.data);
 
@@ -51,4 +52,5 @@
   <div v-else class="min-h-full bg-gray-200 flex items-center justify-center">
     <Spinner />
   </div>
+  <Toast />
 </template>
