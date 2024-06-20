@@ -86,3 +86,28 @@ export function updateProduct({ commit }, product) {
 export function deleteProduct({ commit }, id) {
     return axiosClient.delete(`/products/${id}`);
 }
+
+export function getOrders({ commit, state }, { url = null, search = '', per_page, sort_field, sort_direction } = {}) {
+    commit('setOrders', [true]);
+    url = url || '/orders';
+    const params = {
+        per_page : state.orders.limit
+    }
+
+    return axiosClient.get(url, {
+        params : {
+            ...params,
+            search, per_page, sort_field, sort_direction
+        }
+    })
+    .then((response) => {
+        commit('setOrders', [false, response.data]);
+    })
+    .catch(() => {
+        commit('setOrders', [false]);
+    })
+}
+
+export function getOrder({ commit }, id) {
+    return axiosClient.get(`/orders/${id}`);
+}
