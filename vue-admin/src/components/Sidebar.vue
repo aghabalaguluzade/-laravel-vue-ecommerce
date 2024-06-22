@@ -1,5 +1,5 @@
 <script setup>
-  import { HomeIcon, UsersIcon, ViewListIcon, ChartBarIcon } from '@heroicons/vue/outline'
+  import { HomeIcon, UserGroupIcon, UsersIcon, ViewListIcon, ChartBarIcon } from '@heroicons/vue/outline'
 </script>
 
 <template>
@@ -38,6 +38,15 @@
       </span>
       <span class="text-xs">
         Users
+      </span>
+    </router-link>
+    <router-link :to="{name: 'app.customers'}"
+                 class="flex items-center p-2 rounded transition-colors hover:bg-black/30">
+      <span class="mr-2 text-gray-300">
+        <UserGroupIcon class="w-5"/>
+      </span>
+      <span class="text-xs">
+        Customers
       </span>
     </router-link>
     <router-link :to="{name: 'app.dashboard'}"
