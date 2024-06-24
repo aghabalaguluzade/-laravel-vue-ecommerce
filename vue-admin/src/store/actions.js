@@ -146,7 +146,7 @@ export function getOrders({ commit, state }, { url = null, search = '', per_page
     commit('setOrders', [true]);
     url = url || '/orders';
     const params = {
-        per_page : state.orders.limit;
+        per_page : state.orders.limit
     }
 
     return axiosClient.get(url, {
@@ -166,6 +166,6 @@ export function getOrders({ commit, state }, { url = null, search = '', per_page
         })
 }
 
-export function getOrders({ commit }, id) {
-    return axiosClient.get(`/orders/${id}`);
-}
+// export function getOrders({ commit }, id) {
+//     return axiosClient.get(`/orders/${id}`);
+// }
